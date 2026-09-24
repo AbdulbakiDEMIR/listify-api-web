@@ -1,0 +1,67 @@
+name: Deploy to GCP VM
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy to Compute Engine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GCP VM via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_VM_SSH_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            set -e
+            echo "=========================================="
+            echo "🚀 Deployment Başlatıldı: $(date)"
+            echo "=========================================="
+
+            # Proje dizinini tespit et
+            APP_DIR="/opt/app"
+            if [ ! -d "$APP_DIR" ]; then
+              APP_DIR="$HOME/project-memory-template"
+            fi
+
+            if [ ! -d "$APP_DIR" ]; then
+              echo "HATA: Proje dizini bulunamadı ($APP_DIR)!"
+              exit 1
+            fi
+
+            cd "$APP_DIR"
+            echo "📂 Dizin: $PWD"
+
+            # En güncel kodu Git'ten çek
+            echo "📥 Git güncelleniyor..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Ortam dosyası kontrolü
+            if [ ! -f .env ]; then
+              if [ -f .env.example ]; then
+                echo "⚠️  .env dosyası yoktu, .env.example dosyasından üretildi."
+                cp .env.example .env
+              fi
+            fi
+
+            # Docker Compose ile servisleri yeniden derle ve başlat
+            echo "🐳 Docker konteynerleri derleniyor ve ayağa kaldırılıyor..."
+            docker compose up -d --build --remove-orphans
+
+            # Kullanılmayan eski imaj ve cache'leri temizle
+            echo "🧹 Eski Docker imajları temizleniyor..."
+            docker image prune -f
+
+            # Sağlık ve durum kontrolü
+            echo "=========================================="
+            echo "📊 Çalışan Servisler:"
+            docker compose ps
+            echo "=========================================="
+            echo "✅ Deployment Başarıyla Tamamlandı!"
