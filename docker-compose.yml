@@ -39,8 +39,7 @@ services:
       TTL_HOURS: ${TTL_HOURS:-48}
       CLEANUP_CRON_SCHEDULE: ${CLEANUP_CRON_SCHEDULE:-"0 * * * *"}
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     networks:
       - listify_net
 
