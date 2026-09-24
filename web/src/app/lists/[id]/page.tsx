@@ -21,6 +21,7 @@ import { syncManager } from '@/lib/syncManager';
 import { List, ListItem, ShareResponse } from '@/types';
 import ItemInput from '@/components/ItemInput';
 import ShareModal from '@/components/ShareModal';
+import { generateUUID } from '@/lib/uuid';
 
 export default function SingleListPage() {
   const params = useParams();
@@ -76,7 +77,7 @@ export default function SingleListPage() {
     if (!list) return;
 
     const newItem: ListItem = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       list_id: listId,
       name,
       category,

@@ -7,6 +7,7 @@ import { RefreshCw, AlertCircle, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { fetchClonedList, fetchSyncState } from '@/lib/apiClient';
 import { saveList, saveItem } from '@/lib/indexedDB';
 import { List, ListItem } from '@/types';
+import { generateUUID } from '@/lib/uuid';
 
 export default function ShareRouteHandler() {
   const params = useParams();
@@ -26,7 +27,7 @@ export default function ShareRouteHandler() {
         if (type === 'clone') {
           // Klonlama: Listeyi çek, yeni yerel liste oluştur
           const data = await fetchClonedList(token);
-          const newListId = crypto.randomUUID();
+          const newListId = generateUUID();
 
           const newList: List = {
             id: newListId,
@@ -41,7 +42,7 @@ export default function ShareRouteHandler() {
           for (const item of data.items) {
             await saveItem({
               ...item,
-              id: crypto.randomUUID(),
+              id: generateUUID(),
               list_id: newListId,
               is_completed: false,
               updated_at: Date.now(),
@@ -59,7 +60,7 @@ export default function ShareRouteHandler() {
             throw new Error('Liste verisi alınamadı.');
           }
 
-          const newListId = crypto.randomUUID();
+          const newListId = generateUUID();
           const newList: List = {
             id: newListId,
             title: data.title || 'Paylaşılan Liste',

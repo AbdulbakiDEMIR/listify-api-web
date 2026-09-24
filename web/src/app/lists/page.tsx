@@ -17,6 +17,7 @@ import {
 import { getAllLists, saveList, deleteList, saveItem } from '@/lib/indexedDB';
 import { List, ListTemplate, ListType } from '@/types';
 import TemplateModal from '@/components/TemplateModal';
+import { generateUUID } from '@/lib/uuid';
 
 export default function ListsPage() {
   const router = useRouter();
@@ -49,7 +50,7 @@ export default function ListsPage() {
     if (!newTitle.trim()) return;
 
     const newList: List = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       title: newTitle.trim(),
       type: newType,
       created_at: Date.now(),
@@ -63,7 +64,7 @@ export default function ListsPage() {
   };
 
   const handleSelectTemplate = async (template: ListTemplate) => {
-    const listId = crypto.randomUUID();
+    const listId = generateUUID();
     const newList: List = {
       id: listId,
       title: template.title,
@@ -77,7 +78,7 @@ export default function ListsPage() {
     // Şablon maddelerini oluştur
     for (const item of template.items) {
       await saveItem({
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         list_id: listId,
         name: item.name,
         category: item.category || 'Genel',

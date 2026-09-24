@@ -1,5 +1,6 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import { List, ListItem, ListTemplate } from '@/types';
+import { generateUUID } from './uuid';
 
 interface ListifyDBSchema extends DBSchema {
   lists: {
@@ -183,7 +184,7 @@ export function getClientId(): string {
   const KEY = 'listify_client_id';
   let clientId = localStorage.getItem(KEY);
   if (!clientId) {
-    clientId = crypto.randomUUID();
+    clientId = generateUUID();
     localStorage.setItem(KEY, clientId);
   }
   return clientId;
