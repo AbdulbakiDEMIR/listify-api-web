@@ -27,6 +27,9 @@ jobs:
             # Proje dizinini tespit et
             APP_DIR="/opt/app"
             if [ ! -d "$APP_DIR" ]; then
+              APP_DIR="$HOME/listify-api-web"
+            fi
+            if [ ! -d "$APP_DIR" ]; then
               APP_DIR="$HOME/project-memory-template"
             fi
 
@@ -40,7 +43,9 @@ jobs:
 
             # En güncel kodu Git'ten çek
             echo "📥 Git güncelleniyor..."
-            git fetch origin main
+            git remote set-url origin git@github.com:AbdulbakiDEMIR/listify-api-web.git
+            ssh -o BatchMode=yes -T git@github.com || true
+            git fetch --prune origin main
             git reset --hard origin/main
 
             # Ortam dosyası kontrolü
