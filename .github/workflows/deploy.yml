@@ -104,8 +104,8 @@ jobs:
       - name: Build and push API image
         uses: docker/build-push-action@v6
         with:
-          context: . # API klasörünüzün yolu
-          file: ./Dockerfile
+          context: ./api
+          file: ./api/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/listify-api:latest
 
@@ -113,8 +113,8 @@ jobs:
       - name: Build and push Web image
         uses: docker/build-push-action@v6
         with:
-          context: . # Web klasörünüzün yolu
-          file: ./Dockerfile.web
+          context: ./web
+          file: ./web/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/listify-web:latest
 
