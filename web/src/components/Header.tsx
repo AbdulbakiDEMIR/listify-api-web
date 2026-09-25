@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import ThemeToggle from './ThemeToggle';
-import { ListPlus } from 'lucide-react';
+import { ListPlus, Sparkles } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -43,10 +43,14 @@ export default function Header() {
           </div>
         </Link>
 
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link href="/lists" className="btn btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.88rem' }}>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+          <Link href="/lists" className="btn btn-secondary" style={{ padding: '0.5rem 0.9rem', fontSize: '0.88rem' }}>
             <ListPlus size={17} style={{ color: 'var(--accent-primary)' }} />
             <span>Listelerim</span>
+          </Link>
+          <Link href="/templates" className="btn btn-secondary" style={{ padding: '0.5rem 0.9rem', fontSize: '0.88rem' }}>
+            <Sparkles size={16} style={{ color: 'var(--accent-primary)' }} />
+            <span>Taslaklarım</span>
           </Link>
           <ThemeToggle />
         </nav>

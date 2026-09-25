@@ -13,4 +13,26 @@ const pool = mysql.createPool({
     keepAliveInitialDelay: 10000
 });
 
+/**
+ * Veritabanı şema güncelliğini kontrol eder ve gerekirse eksik sütunları ekler.
+ */
+async function initDB() {
+    try {
+        const [columns] = await pool.query(
+            `SHOW COLUMNS FROM shared_lists LIKE 'title_updated_at'`
+        );
+        if (columns.length === 0) {
+            await pool.query(
+                `ALTER TABLE shared_lists ADD COLUMN title_updated_at BIGINT NULL DEFAULT NULL AFTER title`
+            );
+            console.log('[Listify DB] title_updated_at kolonu başarıyla eklendi.');
+        }
+    } catch (err) {
+        // Tablo henüz init.sql ile oluşturulmamışsa veya ilk başlangıçtaysa hata normal olabilir
+        console.warn('[Listify DB] Şema kontrolü uyarısı:', err.message);
+    }
+}
+
 module.exports = pool;
+module.exports.initDB = initDB;
+

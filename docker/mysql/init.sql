@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `shared_lists` (
     `local_list_id` VARCHAR(64) NOT NULL,
     `owner_client_id` VARCHAR(64) NOT NULL,
     `title` VARCHAR(255) NOT NULL,
+    `title_updated_at` BIGINT NULL DEFAULT NULL,
     `type` ENUM('shopping', 'todo') NOT NULL DEFAULT 'shopping',
     `sync_token` VARCHAR(32) NOT NULL,
     `clone_token` VARCHAR(32) NOT NULL,

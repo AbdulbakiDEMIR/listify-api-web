@@ -1,0 +1,20 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAMID.com.moonksoftware.shoppinglist",
+        "paths": [
+          "/l/clone/*",
+          "/l/sync/*",
+          "/l/*"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "TEAMID.com.moonksoftware.shoppinglist"
+    ]
+  }
+}

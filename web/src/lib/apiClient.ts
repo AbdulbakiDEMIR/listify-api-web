@@ -13,6 +13,7 @@ export async function createShareSession(list: List, items: ListItem[]): Promise
       local_list_id: list.id,
       owner_client_id: clientId,
       title: list.title,
+      title_updated_at: list.title_updated_at || list.updated_at || Date.now(),
       type: list.type,
       items
     })
@@ -26,7 +27,7 @@ export async function createShareSession(list: List, items: ListItem[]): Promise
   return response.json();
 }
 
-export async function fetchClonedList(cloneToken: string): Promise<{ title: string; type: 'shopping' | 'todo'; items: ListItem[] }> {
+export async function fetchClonedList(cloneToken: string): Promise<{ title: string; type: 'shopping' | 'todo'; items: ListItem[]; expires_at?: string }> {
   const response = await fetch(`${API_BASE}/shares/clone/${cloneToken}`);
 
   if (!response.ok) {
@@ -41,9 +42,12 @@ export async function fetchClonedList(cloneToken: string): Promise<{ title: stri
 
 export async function fetchSyncState(syncToken: string, currentVersion = 0): Promise<{
   notModified?: boolean;
+  id?: string;
   title?: string;
+  title_updated_at?: number;
   type?: 'shopping' | 'todo';
   version?: number;
+  clone_token?: string;
   items?: ListItem[];
   expires_at?: string;
 }> {
@@ -67,16 +71,28 @@ export async function fetchSyncState(syncToken: string, currentVersion = 0): Pro
   return response.json();
 }
 
-export async function pushMutations(syncToken: string, items: ListItem[]): Promise<{ version: number; items: ListItem[] }> {
+export async function pushMutations(
+  syncToken: string, 
+  items: ListItem[], 
+  title?: string, 
+  title_updated_at?: number
+): Promise<{ version: number; title?: string; title_updated_at?: number; expires_at?: string; items: ListItem[] }> {
   const clientId = getClientId();
+
+  const payload: Record<string, any> = {
+    client_id: clientId,
+    items
+  };
+
+  if (title !== undefined) {
+    payload.title = title;
+    payload.title_updated_at = title_updated_at || Date.now();
+  }
 
   const response = await fetch(`${API_BASE}/shares/sync/${syncToken}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      client_id: clientId,
-      items
-    })
+    body: JSON.stringify(payload)
   });
 
   if (!response.ok) {

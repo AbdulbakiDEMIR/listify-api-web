@@ -18,10 +18,12 @@ import {
 import { getListById, getItemsByListId, getAllRawItemsByListId, saveList, saveItem, softDeleteItem } from '@/lib/indexedDB';
 import { createShareSession, pushMutations } from '@/lib/apiClient';
 import { syncManager } from '@/lib/syncManager';
-import { List, ListItem, ShareResponse } from '@/types';
+import { List, ListItem, ShareResponse, TemplateItem } from '@/types';
 import ItemInput from '@/components/ItemInput';
 import ShareModal from '@/components/ShareModal';
+import QuickAddTemplateModal from '@/components/QuickAddTemplateModal';
 import { generateUUID } from '@/lib/uuid';
+import { detectCategory } from '@/lib/dictionary';
 
 export default function SingleListPage() {
   const params = useParams();
@@ -37,6 +39,9 @@ export default function SingleListPage() {
   const [shareData, setShareData] = useState<ShareResponse | null>(null);
   const [sharingLoading, setSharingLoading] = useState(false);
 
+  // Hızlı Taslak Ekle Modalı Durumu
+  const [showQuickAddModal, setShowQuickAddModal] = useState(false);
+
   // Veriyi IndexedDB'den Yükle
   const loadData = async () => {
     try {
@@ -48,12 +53,24 @@ export default function SingleListPage() {
       setList(currentList);
 
       const activeItems = await getItemsByListId(listId);
+      activeItems.sort((a, b) => {
+        if (a.order !== undefined && b.order !== undefined) {
+          return a.order - b.order;
+        }
+        return b.updated_at - a.updated_at;
+      });
       setItems(activeItems);
 
       // Canlı senkronizasyon oturumu varsa SyncManager'ı başlat
       if (currentList.is_synced && currentList.sync_token) {
         syncManager.start(listId, currentList.sync_token, (updatedList, updatedItems) => {
           setList({ ...updatedList });
+          updatedItems.sort((a, b) => {
+            if (a.order !== undefined && b.order !== undefined) {
+              return a.order - b.order;
+            }
+            return b.updated_at - a.updated_at;
+          });
           setItems([...updatedItems]);
         });
       }
@@ -76,6 +93,7 @@ export default function SingleListPage() {
   const handleAddItem = async (name: string, category: string) => {
     if (!list) return;
 
+    const currentMaxOrder = items.reduce((max, it) => Math.max(max, it.order ?? 0), 0);
     const newItem: ListItem = {
       id: generateUUID(),
       list_id: listId,
@@ -83,11 +101,12 @@ export default function SingleListPage() {
       category,
       is_completed: false,
       updated_at: Date.now(),
-      is_deleted: false
+      is_deleted: false,
+      order: currentMaxOrder + 1
     };
 
     // 1. Yerel State Güncellemesi (Anında Tepki)
-    setItems(prev => [newItem, ...prev]);
+    setItems(prev => [...prev, newItem]);
 
     // 2. IndexedDB'ye Kaydet
     await saveItem(newItem);
@@ -150,6 +169,41 @@ export default function SingleListPage() {
         await pushMutations(list.sync_token, [deletedItem]);
       } catch (err) {
         console.warn('Silme bilgisi sunucuya iletilemedi:', err);
+      }
+    }
+  };
+
+  // Taslaktaki Maddeleri Listeye Hızlı Ekleme
+  const handleAddTemplateItems = async (templateItems: TemplateItem[]) => {
+    if (!list) return;
+
+    const now = Date.now();
+    let currentMaxOrder = items.reduce((max, it) => Math.max(max, it.order ?? 0), 0);
+    const newItems: ListItem[] = templateItems.map(item => ({
+      id: generateUUID(),
+      list_id: listId,
+      name: item.name,
+      category: item.category || (list.type === 'shopping' ? detectCategory(item.name) : 'Genel'),
+      is_completed: false,
+      updated_at: now,
+      is_deleted: false,
+      order: ++currentMaxOrder
+    }));
+
+    // 1. Yerel State Güncellemesi (Optimistic UI)
+    setItems(prev => [...prev, ...newItems]);
+
+    // 2. IndexedDB'ye Kaydet
+    for (const newItem of newItems) {
+      await saveItem(newItem);
+    }
+
+    // 3. Canlı Senkronizasyon Varsa Sunucuya İlet
+    if (list.is_synced && list.sync_token) {
+      try {
+        await pushMutations(list.sync_token, newItems);
+      } catch (err) {
+        console.warn('Taslak maddeleri sunucuya iletilemedi:', err);
       }
     }
   };
@@ -231,13 +285,23 @@ export default function SingleListPage() {
           <span>Tüm Listeler</span>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           {list.is_synced && (
             <span className="badge badge-indigo" title="60 saniyede bir akıllı senkronize ediliyor">
               <RefreshCw size={12} className="animate-spin" />
               <span>Canlı Senkronize</span>
             </span>
           )}
+
+          <button
+            onClick={() => setShowQuickAddModal(true)}
+            className="btn btn-secondary"
+            style={{ fontSize: '0.88rem', padding: '0.55rem 1rem' }}
+            title="Kayıtlı bir taslaktaki maddeleri bu listeye hızlıca ekleyin"
+          >
+            <Sparkles size={16} style={{ color: 'var(--accent-primary)' }} />
+            <span>Taslaktan Ekle</span>
+          </button>
 
           <button
             onClick={handleOpenShare}
@@ -303,7 +367,15 @@ export default function SingleListPage() {
       {items.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '3.5rem 1rem', color: 'var(--text-muted)' }}>
           <p style={{ fontSize: '0.95rem', marginBottom: '0.5rem' }}>Bu listede henüz hiçbir madde bulunmuyor.</p>
-          <p style={{ fontSize: '0.85rem' }}>Yukarıdaki alana ürün veya görev yazarak başlayabilirsiniz.</p>
+          <p style={{ fontSize: '0.85rem', marginBottom: '1.25rem' }}>Yukarıdaki alana ürün veya görev yazabilir ya da taslaktan hızlı ekleyebilirsiniz.</p>
+          <button
+            onClick={() => setShowQuickAddModal(true)}
+            className="btn btn-secondary"
+            style={{ fontSize: '0.85rem', padding: '0.55rem 1.1rem' }}
+          >
+            <Sparkles size={15} style={{ color: 'var(--accent-primary)' }} />
+            <span>Taslaktan Madde Ekle</span>
+          </button>
         </div>
       ) : list.type === 'shopping' && groupedItems ? (
         // Alışveriş Listesi - Kategori Gruplu Görünüm
@@ -392,6 +464,14 @@ export default function SingleListPage() {
         onClose={() => setShowShareModal(false)}
         shareData={shareData}
         listTitle={list.title}
+      />
+
+      {/* Hızlı Taslak Ekle Modalı */}
+      <QuickAddTemplateModal
+        isOpen={showQuickAddModal}
+        onClose={() => setShowQuickAddModal(false)}
+        currentListTitle={list.title}
+        onAddItems={handleAddTemplateItems}
       />
     </div>
   );

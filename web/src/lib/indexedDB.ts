@@ -131,51 +131,69 @@ export async function softDeleteItem(id: string): Promise<void> {
   }
 }
 
-// ==================== TEMPLATES ====================
+// ==================== TEMPLATES (KULLANICI TASLAKLARI) ====================
 
-export const DEFAULT_TEMPLATES: ListTemplate[] = [
-  {
-    id: 'template-market',
-    title: 'Haftalık Market Alışverişi',
-    type: 'shopping',
-    description: 'Süt, ekmek, sebze ve temel gıdalar içeren standart haftalık sepet.',
-    items: [
-      { name: 'Süt', category: 'Süt & Kahvaltılık' },
-      { name: 'Yumurta (15li)', category: 'Süt & Kahvaltılık' },
-      { name: 'Ekmek', category: 'Fırın & Unlu Mamüller' },
-      { name: 'Peynir', category: 'Süt & Kahvaltılık' },
-      { name: 'Domates', category: 'Meyve & Sebze' },
-      { name: 'Salatalık', category: 'Meyve & Sebze' },
-      { name: 'Zeytinyağı', category: 'Kuru Gıda & Bakliyat' }
-    ]
-  },
-  {
-    id: 'template-tatil',
-    title: 'Tatil / Seyahat Hazırlığı',
-    type: 'todo',
-    description: 'Bavul hazırlığı, belgeler ve yola çıkmadan önceki son kontroller.',
-    items: [
-      { name: 'Kimlik ve Pasaport kontrolü' },
-      { name: 'Şarj aletleri ve powerbank' },
-      { name: 'Güneş kremi ve gözlük' },
-      { name: 'Temel ilaçlar ve ilk yardım' },
-      { name: 'Evdeki vanaları ve prizleri kapat' }
-    ]
-  },
-  {
-    id: 'template-ev-temizlik',
-    title: 'Kapsamlı Ev Temizliği',
-    type: 'todo',
-    description: 'Oda oda detaylı temizlik ve toparlama kontrol listesi.',
-    items: [
-      { name: 'Çarşafları ve havluları yıka' },
-      { name: 'Mutfak tezgahı ve fırını temizle' },
-      { name: 'Banyo ve lavaboları dezenfekte et' },
-      { name: 'Tüm odaları süpür ve sil' },
-      { name: 'Çöpleri dışarı çıkar' }
-    ]
+export async function getAllTemplates(): Promise<ListTemplate[]> {
+  const db = await getDB();
+  const templates = await db.getAll('templates');
+  
+  // Eski hazır şablonları hariç tut, yalnızca kullanıcının oluşturduğu taslakları getir
+  const userTemplates = templates.filter(t => !t.id.startsWith('template-'));
+  return userTemplates.sort((a, b) => (b.updated_at || 0) - (a.updated_at || 0));
+}
+
+
+export async function getTemplateById(id: string): Promise<ListTemplate | undefined> {
+  const db = await getDB();
+  return db.get('templates', id);
+}
+
+export async function saveTemplate(template: ListTemplate): Promise<void> {
+  const db = await getDB();
+  const now = Date.now();
+  const preparedTemplate: ListTemplate = {
+    ...template,
+    id: template.id || generateUUID(),
+    created_at: template.created_at || now,
+    updated_at: now,
+    items: template.items.map(item => ({
+      ...item,
+      id: item.id || generateUUID()
+    }))
+  };
+  await db.put('templates', preparedTemplate);
+}
+
+export async function deleteTemplate(id: string): Promise<void> {
+  const db = await getDB();
+  await db.delete('templates', id);
+}
+
+export async function appendTemplateItemsToList(
+  listId: string, 
+  templateItems: Array<{ name: string; category?: string }>
+): Promise<ListItem[]> {
+  const db = await getDB();
+  const now = Date.now();
+  const newItems: ListItem[] = [];
+
+  for (const item of templateItems) {
+    const newItem: ListItem = {
+      id: generateUUID(),
+      list_id: listId,
+      name: item.name,
+      category: item.category || 'Genel',
+      is_completed: false,
+      updated_at: now,
+      is_deleted: false
+    };
+    newItems.push(newItem);
+    await saveItem(newItem);
   }
-];
+
+  return newItems;
+}
+
 
 // ==================== NO-AUTH CLIENT IDENTIFIER ====================
 

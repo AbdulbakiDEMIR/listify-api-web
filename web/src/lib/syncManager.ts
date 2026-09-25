@@ -148,6 +148,24 @@ class SyncManager {
           list.version = syncResult.version;
         }
 
+        // Başlık (Title) LWW Senkronizasyonu
+        if (syncResult.title) {
+          const serverTitleTime = syncResult.title_updated_at || 0;
+          const localTitleTime = list.title_updated_at || 0;
+          if (serverTitleTime >= localTitleTime) {
+            list.title = syncResult.title;
+            list.title_updated_at = serverTitleTime;
+          }
+        }
+
+        if (syncResult.clone_token && !list.clone_token) {
+          list.clone_token = syncResult.clone_token;
+        }
+
+        if (syncResult.expires_at) {
+          list.expires_at = syncResult.expires_at;
+        }
+
         list.updated_at = Date.now();
         await saveList(list);
 
