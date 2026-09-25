@@ -7,8 +7,12 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-listify_root_secret_pass}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-listify}
-      MYSQL_USER: ${MYSQL_USER:-listify_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-listify_user_secure_pass}     volumes:       - mysql_data:/var/lib/mysql       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro     healthcheck:       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-listify_user_secure_pass}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 20
