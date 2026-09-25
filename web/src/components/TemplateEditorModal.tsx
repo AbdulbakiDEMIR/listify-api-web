@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, ShoppingCart, CheckSquare, Sparkles, Layers } from 'lucide-react';
+import { X, Plus, Trash2, ShoppingCart, CheckSquare, Sparkles } from 'lucide-react';
 import { ListTemplate, ListType, TemplateItem } from '@/types';
 import { saveTemplate } from '@/lib/indexedDB';
 import { generateUUID } from '@/lib/uuid';
@@ -104,8 +104,10 @@ export default function TemplateEditorModal({
       <div
         className="modal-content"
         onClick={e => e.stopPropagation()}
-        style={{ padding: '1.75rem', maxWidth: '580px', maxHeight: '90vh', overflowY: 'auto', overflowX: 'hidden' }}
       >
+        {/* Mobile Drag Handle */}
+        <div className="sheet-drag-handle" />
+
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <div style={{
@@ -116,7 +118,8 @@ export default function TemplateEditorModal({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--accent-primary)'
+              color: 'var(--accent-primary)',
+              flexShrink: 0
             }}>
               <Sparkles size={20} />
             </div>
@@ -136,8 +139,8 @@ export default function TemplateEditorModal({
 
         <form onSubmit={handleSave}>
           {/* Başlık */}
-          <div style={{ marginBottom: '1.1rem' }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.35rem' }}>
               Taslak Başlığı <span style={{ color: 'var(--danger)' }}>*</span>
             </label>
             <input
@@ -145,14 +148,14 @@ export default function TemplateEditorModal({
               className="input"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="Ör. Haftalık Pazar Alışverişi, Kamp Malzemeleri..."
+              placeholder="Ör. Haftalık Pazar, Kamp Çantası..."
               required
             />
           </div>
 
           {/* Açıklama */}
-          <div style={{ marginBottom: '1.1rem' }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.35rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.35rem' }}>
               Kısa Açıklama (İsteğe Bağlı)
             </label>
             <input
@@ -165,21 +168,21 @@ export default function TemplateEditorModal({
           </div>
 
           {/* Tür Seçimi: Oluşturulduktan sonra güncellenemez */}
-          <div style={{ marginBottom: '1.4rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700 }}>
+          <div style={{ marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+              <label style={{ fontSize: '0.82rem', fontWeight: 700 }}>
                 Taslak Türü
               </label>
               {templateToEdit && (
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  🔒 Oluşturulan taslağın türü değiştirilemez
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                  🔒 Sabit Tür
                 </span>
               )}
             </div>
 
             {templateToEdit ? (
               <div style={{
-                padding: '0.75rem 1rem',
+                padding: '0.65rem 0.85rem',
                 borderRadius: 'var(--radius-md)',
                 background: 'var(--bg-elevated)',
                 border: '1px solid var(--border-strong)',
@@ -188,145 +191,145 @@ export default function TemplateEditorModal({
                 gap: '0.65rem',
                 color: 'var(--text-primary)',
                 fontWeight: 600,
-                fontSize: '0.9rem'
+                fontSize: '0.88rem'
               }}>
                 {templateToEdit.type === 'shopping' ? (
                   <>
-                    <ShoppingCart size={18} style={{ color: '#0f766e' }} />
+                    <ShoppingCart size={17} style={{ color: '#0f766e' }} />
                     <span>Alışveriş Sepeti (Liste)</span>
                   </>
                 ) : (
                   <>
-                    <CheckSquare size={18} style={{ color: '#10b981' }} />
+                    <CheckSquare size={17} style={{ color: '#10b981' }} />
                     <span>Yapılacaklar (To-Do)</span>
                   </>
                 )}
-                <span className="badge" style={{ marginLeft: 'auto', fontSize: '0.72rem' }}>
-                  Sabit Tür
-                </span>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
                 <button
                   type="button"
                   onClick={() => setType('shopping')}
                   style={{
-                    padding: '0.75rem',
+                    padding: '0.65rem',
                     borderRadius: 'var(--radius-md)',
                     border: type === 'shopping' ? '2px solid var(--accent-primary)' : '1px solid var(--border-strong)',
                     background: type === 'shopping' ? 'rgba(99, 102, 241, 0.08)' : 'var(--bg-elevated)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
+                    gap: '0.45rem',
                     color: 'var(--text-primary)',
                     fontFamily: 'inherit',
                     fontWeight: 600,
-                    fontSize: '0.88rem'
+                    fontSize: '0.85rem',
+                    minHeight: '44px'
                   }}
                 >
-                  <ShoppingCart size={17} style={{ color: '#0f766e' }} />
-                  <span>Alışveriş Sepeti (Liste)</span>
+                  <ShoppingCart size={16} style={{ color: '#0f766e' }} />
+                  <span>Alışveriş</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setType('todo')}
                   style={{
-                    padding: '0.75rem',
+                    padding: '0.65rem',
                     borderRadius: 'var(--radius-md)',
                     border: type === 'todo' ? '2px solid var(--accent-primary)' : '1px solid var(--border-strong)',
                     background: type === 'todo' ? 'rgba(16, 185, 129, 0.08)' : 'var(--bg-elevated)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
+                    gap: '0.45rem',
                     color: 'var(--text-primary)',
                     fontFamily: 'inherit',
                     fontWeight: 600,
-                    fontSize: '0.88rem'
+                    fontSize: '0.85rem',
+                    minHeight: '44px'
                   }}
                 >
-                  <CheckSquare size={17} style={{ color: '#10b981' }} />
-                  <span>Yapılacaklar (To-Do)</span>
+                  <CheckSquare size={16} style={{ color: '#10b981' }} />
+                  <span>Yapılacaklar</span>
                 </button>
               </div>
             )}
           </div>
 
           {/* Maddeler Bölümü */}
-          <div style={{ marginBottom: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-subtle)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-              <label style={{ fontSize: '0.9rem', fontWeight: 700 }}>
+          <div style={{ marginBottom: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid var(--border-subtle)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 700 }}>
                 Taslak Maddeleri ({items.length})
               </label>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                 İşaretleme yapılmadan eklenir
               </span>
             </div>
 
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.85rem' }}>
-              Buradaki maddeler şablon olarak saklanır. Gerçek bir listeye aktarıldığında işaretlenebilir hale gelir.
-            </p>
+            {/* Yeni Madde Ekleme Formu - Mobilde Kolay Kırılan/Esnek Yapı */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  className="input"
+                  style={{ flex: 1 }}
+                  value={newItemName}
+                  onChange={e => handleItemNameChange(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddItem();
+                    }
+                  }}
+                  placeholder={type === 'shopping' ? 'Ürün adı (Ör. Zeytinyağı)...' : 'Görev adı...'}
+                />
 
-            {/* Yeni Madde Ekleme Satırı */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              <input
-                type="text"
-                className="input"
-                style={{ flex: 1 }}
-                value={newItemName}
-                onChange={e => handleItemNameChange(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddItem();
-                  }
-                }}
-                placeholder={type === 'shopping' ? 'Ürün adı (Ör. Zeytinyağı, Yumurta)' : 'Görev adı (Ör. Pasaportları kontrol et)'}
-              />
+                <button
+                  type="button"
+                  onClick={() => handleAddItem()}
+                  className="btn btn-secondary"
+                  style={{ padding: '0.55rem 0.9rem', flexShrink: 0, minHeight: '46px' }}
+                  title="Madde Ekle"
+                >
+                  <Plus size={18} />
+                  <span>Ekle</span>
+                </button>
+              </div>
 
               {type === 'shopping' && (
-                <select
-                  className="input"
-                  style={{ width: '150px', fontSize: '0.85rem' }}
-                  value={newItemCategory}
-                  onChange={e => setNewItemCategory(e.target.value)}
-                >
-                  <option value="Genel">Genel</option>
-                  {CATEGORIES.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', flexShrink: 0 }}>Reyon:</span>
+                  <select
+                    className="input"
+                    style={{ fontSize: '0.82rem', padding: '0.4rem 0.65rem', minHeight: '38px' }}
+                    value={newItemCategory}
+                    onChange={e => setNewItemCategory(e.target.value)}
+                  >
+                    <option value="Genel">Genel</option>
+                    {CATEGORIES.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
               )}
-
-              <button
-                type="button"
-                onClick={() => handleAddItem()}
-                className="btn btn-secondary"
-                style={{ padding: '0.55rem 0.9rem', flexShrink: 0 }}
-                title="Madde Ekle"
-              >
-                <Plus size={18} />
-                <span>Ekle</span>
-              </button>
             </div>
 
-            {/* Eklenen Maddelerin Listesi (İşaretleme kutusu olmadan) */}
+            {/* Eklenen Maddelerin Listesi */}
             <div style={{
               background: 'var(--bg-elevated)',
               borderRadius: 'var(--radius-md)',
               border: '1px solid var(--border-subtle)',
-              maxHeight: '220px',
+              maxHeight: '180px',
               overflowY: 'auto',
-              padding: '0.5rem'
+              padding: '0.45rem'
             }}>
               {items.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '1.75rem 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                  Henüz madde eklenmedi. Yukarıdaki alandan taslağa ürün veya görevler ekleyin.
+                <div style={{ textAlign: 'center', padding: '1.5rem 1rem', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                  Henüz madde eklenmedi.
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                   {items.map((item, idx) => (
                     <div
                       key={item.id || idx}
@@ -334,30 +337,30 @@ export default function TemplateEditorModal({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '0.55rem 0.75rem',
+                        padding: '0.5rem 0.65rem',
                         background: 'var(--bg-surface)',
                         borderRadius: 'var(--radius-sm)',
                         border: '1px solid var(--border-subtle)',
-                        gap: '0.75rem'
+                        gap: '0.5rem'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: 0 }}>
                         <span style={{
-                          fontSize: '0.75rem',
+                          fontSize: '0.72rem',
                           fontWeight: 700,
                           color: 'var(--text-muted)',
-                          width: '20px',
+                          width: '18px',
                           textAlign: 'center'
                         }}>
                           {idx + 1}.
                         </span>
-                        <span style={{ fontSize: '0.9rem', fontWeight: 600, wordBreak: 'break-word' }}>
+                        <span style={{ fontSize: '0.88rem', fontWeight: 600, wordBreak: 'break-word' }}>
                           {item.name}
                         </span>
                         {item.category && item.category !== 'Genel' && (
                           <span className="badge" style={{
-                            fontSize: '0.72rem',
-                            padding: '2px 6px',
+                            fontSize: '0.68rem',
+                            padding: '1px 5px',
                             background: 'var(--bg-elevated)',
                             color: 'var(--accent-primary)'
                           }}>
@@ -370,7 +373,7 @@ export default function TemplateEditorModal({
                         type="button"
                         onClick={() => handleRemoveItem(idx)}
                         className="btn btn-ghost btn-icon"
-                        style={{ padding: '0.3rem', color: 'var(--danger)' }}
+                        style={{ padding: '0.25rem', color: 'var(--danger)', minHeight: '36px', minWidth: '36px' }}
                         title="Maddeyi Çıkar"
                       >
                         <Trash2 size={15} />
@@ -383,11 +386,11 @@ export default function TemplateEditorModal({
           </div>
 
           {/* Modal Alt Aksiyonları */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-subtle)' }}>
-            <button type="button" onClick={onClose} className="btn btn-secondary">
+          <div style={{ display: 'flex', gap: '0.65rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-subtle)' }}>
+            <button type="button" onClick={onClose} className="btn btn-secondary" style={{ flex: 1, minHeight: '44px' }}>
               İptal
             </button>
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary" style={{ flex: 2, minHeight: '44px' }}>
               {templateToEdit ? 'Değişiklikleri Kaydet' : 'Taslağı Oluştur'}
             </button>
           </div>

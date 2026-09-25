@@ -72,11 +72,14 @@ export default function ListsPage() {
   useEffect(() => {
     loadData();
 
-    // URL'de ?tab=templates parametresi varsa taslaklar sekmesine geç
+    // URL parametrelerini işle (?tab=templates veya ?action=new)
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('tab') === 'templates') {
         setActiveTab('templates');
+      }
+      if (params.get('action') === 'new') {
+        handleOpenNewModal();
       }
     }
   }, []);
@@ -194,31 +197,24 @@ export default function ListsPage() {
 
   return (
     <div style={{ maxWidth: '880px', margin: '0 auto', paddingTop: '1rem' }}>
-      {/* Ana Ekran Sekme Geçişi: Listelerim <-> Taslaklarım */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.65rem',
-        marginBottom: '2rem',
-        borderBottom: '1px solid var(--border-subtle)',
-        paddingBottom: '0.75rem'
-      }}>
+      {/* Mobile-First Segmented Control: Listelerim <-> Taslaklarım */}
+      <div className="segmented-control" style={{ marginBottom: '1.5rem' }}>
         <button
+          type="button"
           onClick={() => setActiveTab('lists')}
-          className={`btn ${activeTab === 'lists' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ padding: '0.6rem 1.25rem', fontSize: '0.92rem' }}
+          className={`segmented-control-btn ${activeTab === 'lists' ? 'active' : ''}`}
         >
           <ListPlus size={18} />
           <span>Listelerim ({lists.length})</span>
         </button>
 
         <button
+          type="button"
           onClick={() => setActiveTab('templates')}
-          className={`btn ${activeTab === 'templates' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ padding: '0.6rem 1.25rem', fontSize: '0.92rem' }}
+          className={`segmented-control-btn ${activeTab === 'templates' ? 'active' : ''}`}
         >
           <Sparkles size={18} />
-          <span>Taslak Listelerim ({templates.length})</span>
+          <span>Taslaklarım ({templates.length})</span>
         </button>
       </div>
 
@@ -542,8 +538,14 @@ export default function ListsPage() {
       {/* ==================== YENİ LİSTE OLUŞTURMA MODALI ==================== */}
       {showNewModal && (
         <div className="modal-backdrop" onClick={() => setShowNewModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ padding: '1.75rem', maxWidth: '560px' }}>
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, marginBottom: '1.25rem' }}>Yeni Liste Oluştur</h3>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="sheet-drag-handle" />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Yeni Liste Oluştur</h3>
+              <button type="button" onClick={() => setShowNewModal(false)} className="btn btn-ghost btn-icon">
+                <X size={20} />
+              </button>
+            </div>
             <form onSubmit={handleCreateList}>
               {/* Liste Adı */}
               <div style={{ marginBottom: '1.25rem' }}>
@@ -800,13 +802,13 @@ export default function ListsPage() {
                 )}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-                <button type="button" onClick={() => setShowNewModal(false)} className="btn btn-secondary">
+              <div style={{ display: 'flex', gap: '0.65rem', marginTop: '1.25rem' }}>
+                <button type="button" onClick={() => setShowNewModal(false)} className="btn btn-secondary" style={{ flex: 1, minHeight: '44px' }}>
                   İptal
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-primary" style={{ flex: 2, minHeight: '44px' }}>
                   {selectedTemplateIds.length > 0 
-                    ? `Oluştur ve ${totalSelectedItemsCount} Ürünle Aç` 
+                    ? `Oluştur (${totalSelectedItemsCount} Ürün)` 
                     : 'Oluştur ve Aç'}
                 </button>
               </div>
@@ -814,6 +816,16 @@ export default function ListsPage() {
           </div>
         </div>
       )}
+
+      {/* Mobil Floating Action Button */}
+      <button
+        type="button"
+        onClick={handleOpenNewModal}
+        className="mobile-fab"
+        aria-label="Yeni Liste Oluştur"
+      >
+        <Plus size={26} strokeWidth={2.5} />
+      </button>
 
       {/* Taslak Düzenleme / Oluşturma Modalı (İşaretleme yapılmadan) */}
       <TemplateEditorModal

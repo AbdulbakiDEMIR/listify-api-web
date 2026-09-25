@@ -88,23 +88,23 @@ export default function TemplatesPage() {
 
   return (
     <div style={{ maxWidth: '880px', margin: '0 auto', paddingTop: '1rem' }}>
-      {/* Sekme Geçiş Çubuğu (Listelerim <-> Taslaklarım) */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.75rem' }}>
+      {/* Mobile-First Segmented Control (Listelerim <-> Taslaklarım) */}
+      <div className="segmented-control" style={{ marginBottom: '1.5rem' }}>
         <Link
           href="/lists"
-          className="btn btn-secondary"
-          style={{ padding: '0.55rem 1.1rem', fontSize: '0.9rem' }}
+          className="segmented-control-btn"
+          style={{ textDecoration: 'none' }}
         >
-          <ListPlus size={17} />
+          <ListPlus size={18} />
           <span>Listelerim</span>
         </Link>
-        <div
-          className="btn btn-primary"
-          style={{ padding: '0.55rem 1.1rem', fontSize: '0.9rem', cursor: 'default' }}
+        <button
+          type="button"
+          className="segmented-control-btn active"
         >
-          <Sparkles size={17} />
-          <span>Taslaklarım</span>
-        </div>
+          <Sparkles size={18} />
+          <span>Taslaklarım ({templates.length})</span>
+        </button>
       </div>
 
       {/* Başlık ve Aksiyon */}
@@ -289,6 +289,16 @@ export default function TemplatesPage() {
           ))}
         </div>
       )}
+
+      {/* Mobil Floating Action Button */}
+      <button
+        type="button"
+        onClick={handleOpenNewModal}
+        className="mobile-fab"
+        aria-label="Yeni Taslak Oluştur"
+      >
+        <Plus size={26} strokeWidth={2.5} />
+      </button>
 
       {/* Taslak Düzenleme / Oluşturma Modalı */}
       <TemplateEditorModal

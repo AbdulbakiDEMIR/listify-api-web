@@ -46,7 +46,6 @@ export default function QuickAddTemplateModal({
 
   const handleSelectTemplate = (template: ListTemplate) => {
     setSelectedTemplate(template);
-    // Varsayılan olarak tüm maddeleri seç
     setSelectedItemIds(new Set(template.items.map((it, idx) => it.id || String(idx))));
   };
 
@@ -102,8 +101,10 @@ export default function QuickAddTemplateModal({
       <div
         className="modal-content"
         onClick={e => e.stopPropagation()}
-        style={{ padding: '1.75rem', maxWidth: '640px', maxHeight: '90vh', overflowY: 'auto' }}
       >
+        {/* Mobile Drag Handle */}
+        <div className="sheet-drag-handle" />
+
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <div style={{
@@ -114,14 +115,15 @@ export default function QuickAddTemplateModal({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--accent-primary)'
+              color: 'var(--accent-primary)',
+              flexShrink: 0
             }}>
               <Sparkles size={20} />
             </div>
             <div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Listeye Taslak Ekle</h3>
               <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                <strong>&quot;{currentListTitle}&quot;</strong> listesine hazır bir taslaktaki maddeleri aktarın.
+                <strong>&quot;{currentListTitle}&quot;</strong> için hazır maddeler aktarın
               </p>
             </div>
           </div>
@@ -141,14 +143,14 @@ export default function QuickAddTemplateModal({
         ) : (
           <div>
             {/* Taslak Seçici Buton Grubu */}
-            <div style={{ marginBottom: '1.25rem' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, marginBottom: '0.45rem' }}>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.45rem' }}>
                 Taslak Seçin:
               </label>
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-                gap: '0.65rem'
+                gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+                gap: '0.5rem'
               }}>
                 {templates.map(tmpl => {
                   const isSelected = selectedTemplate?.id === tmpl.id;
@@ -158,10 +160,10 @@ export default function QuickAddTemplateModal({
                       type="button"
                       onClick={() => handleSelectTemplate(tmpl)}
                       style={{
-                        padding: '0.75rem',
+                        padding: '0.65rem',
                         borderRadius: 'var(--radius-md)',
                         border: isSelected ? '2px solid var(--accent-primary)' : '1px solid var(--border-subtle)',
-                        background: isSelected ? 'rgba(6, 182, 212, 0.1)' : 'var(--bg-elevated)',
+                        background: isSelected ? 'rgba(6, 182, 212, 0.12)' : 'var(--bg-elevated)',
                         color: 'var(--text-primary)',
                         cursor: 'pointer',
                         textAlign: 'left',
@@ -169,17 +171,17 @@ export default function QuickAddTemplateModal({
                         transition: 'var(--transition)'
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '3px' }}>
                         {tmpl.type === 'shopping' ? (
-                          <ShoppingCart size={15} style={{ color: '#6366f1', flexShrink: 0 }} />
+                          <ShoppingCart size={14} style={{ color: '#6366f1', flexShrink: 0 }} />
                         ) : (
-                          <CheckSquare size={15} style={{ color: '#10b981', flexShrink: 0 }} />
+                          <CheckSquare size={14} style={{ color: '#10b981', flexShrink: 0 }} />
                         )}
-                        <span style={{ fontSize: '0.88rem', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontSize: '0.82rem', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {tmpl.title}
                         </span>
                       </div>
-                      <span className="badge" style={{ fontSize: '0.72rem', padding: '1px 6px' }}>
+                      <span className="badge" style={{ fontSize: '0.68rem', padding: '1px 5px' }}>
                         {tmpl.items.length} Madde
                       </span>
                     </button>
@@ -194,19 +196,19 @@ export default function QuickAddTemplateModal({
                 background: 'var(--bg-elevated)',
                 borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--border-subtle)',
-                padding: '1rem',
+                padding: '0.85rem',
                 marginBottom: '1.25rem'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>
-                    {selectedTemplate.title} ({selectedItemIds.size}/{selectedTemplate.items.length} seçildi)
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 700 }}>
+                    {selectedTemplate.title} ({selectedItemIds.size}/{selectedTemplate.items.length})
                   </div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.35rem' }}>
                     <button
                       type="button"
                       onClick={handleSelectAll}
                       className="btn btn-ghost"
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                      style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem', minHeight: '30px' }}
                     >
                       Tümünü Seç
                     </button>
@@ -214,7 +216,7 @@ export default function QuickAddTemplateModal({
                       type="button"
                       onClick={handleDeselectAll}
                       className="btn btn-ghost"
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                      style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem', minHeight: '30px' }}
                     >
                       Temizle
                     </button>
@@ -222,11 +224,12 @@ export default function QuickAddTemplateModal({
                 </div>
 
                 <div style={{
-                  maxHeight: '200px',
+                  maxHeight: '220px',
                   overflowY: 'auto',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.4rem'
+                  gap: '0.35rem',
+                  paddingRight: '2px'
                 }}>
                   {selectedTemplate.items.map((item, idx) => {
                     const id = item.id || String(idx);
@@ -239,25 +242,26 @@ export default function QuickAddTemplateModal({
                           display: 'flex',
                           alignItems: 'center',
                           gap: '0.65rem',
-                          padding: '0.45rem 0.65rem',
+                          padding: '0.55rem 0.65rem',
+                          minHeight: '44px',
                           background: isChecked ? 'var(--bg-surface)' : 'transparent',
                           borderRadius: 'var(--radius-sm)',
                           cursor: 'pointer',
                           border: isChecked ? '1px solid var(--border-strong)' : '1px solid transparent',
-                          opacity: isChecked ? 1 : 0.6
+                          opacity: isChecked ? 1 : 0.65
                         }}
                       >
                         <div
                           className={`custom-checkbox ${isChecked ? 'checked' : ''}`}
-                          style={{ width: '18px', height: '18px' }}
+                          style={{ width: '22px', height: '22px' }}
                         >
-                          {isChecked && <Check size={12} />}
+                          {isChecked && <Check size={14} strokeWidth={3} />}
                         </div>
-                        <span style={{ fontSize: '0.88rem', fontWeight: 500, flex: 1 }}>
+                        <span style={{ fontSize: '0.88rem', fontWeight: 500, flex: 1, wordBreak: 'break-word' }}>
                           {item.name}
                         </span>
                         {item.category && item.category !== 'Genel' && (
-                          <span className="badge" style={{ fontSize: '0.7rem', padding: '1px 5px' }}>
+                          <span className="badge" style={{ fontSize: '0.68rem', padding: '1px 5px' }}>
                             {item.category}
                           </span>
                         )}
@@ -269,8 +273,14 @@ export default function QuickAddTemplateModal({
             )}
 
             {/* Aksiyon Butonları */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-              <button type="button" onClick={onClose} className="btn btn-secondary" disabled={adding}>
+            <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={onClose}
+                className="btn btn-secondary"
+                disabled={adding}
+                style={{ flex: 1, minHeight: '44px' }}
+              >
                 İptal
               </button>
               <button
@@ -278,9 +288,10 @@ export default function QuickAddTemplateModal({
                 onClick={handleConfirmAdd}
                 className="btn btn-primary"
                 disabled={adding || selectedItemIds.size === 0}
+                style={{ flex: 2, minHeight: '44px' }}
               >
                 <Plus size={18} />
-                <span>{adding ? 'Ekleniyor...' : `${selectedItemIds.size} Maddeyi Listeye Ekle`}</span>
+                <span>{adding ? 'Ekleniyor...' : `${selectedItemIds.size} Maddeyi Ekle`}</span>
               </button>
             </div>
           </div>

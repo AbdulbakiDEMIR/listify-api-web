@@ -278,39 +278,39 @@ export default function SingleListPage() {
 
   return (
     <div style={{ maxWidth: '750px', margin: '0 auto', paddingTop: '0.5rem' }}>
-      {/* Üst Navigasyon ve Butonlar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <Link href="/lists" className="btn btn-ghost" style={{ padding: '0.5rem 0.75rem', fontSize: '0.9rem' }}>
-          <ArrowLeft size={18} />
-          <span>Tüm Listeler</span>
+      {/* Üst Navigasyon ve Butonlar - Mobile Streamlined */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', gap: '0.4rem' }}>
+        <Link href="/lists" className="btn btn-ghost" style={{ padding: '0.45rem 0.65rem', fontSize: '0.88rem', minHeight: '40px' }}>
+          <ArrowLeft size={19} />
+          <span>Listeler</span>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           {list.is_synced && (
-            <span className="badge badge-indigo" title="60 saniyede bir akıllı senkronize ediliyor">
-              <RefreshCw size={12} className="animate-spin" />
-              <span>Canlı Senkronize</span>
+            <span className="badge badge-indigo" title="60 saniyede bir akıllı senkronize ediliyor" style={{ fontSize: '0.72rem', padding: '0.25rem 0.55rem' }}>
+              <RefreshCw size={11} className="animate-spin" />
+              <span>Canlı</span>
             </span>
           )}
 
           <button
             onClick={() => setShowQuickAddModal(true)}
             className="btn btn-secondary"
-            style={{ fontSize: '0.88rem', padding: '0.55rem 1rem' }}
+            style={{ fontSize: '0.82rem', padding: '0.45rem 0.75rem', minHeight: '40px' }}
             title="Kayıtlı bir taslaktaki maddeleri bu listeye hızlıca ekleyin"
           >
-            <Sparkles size={16} style={{ color: 'var(--accent-primary)' }} />
-            <span>Taslaktan Ekle</span>
+            <Sparkles size={15} style={{ color: 'var(--accent-primary)' }} />
+            <span>Taslak</span>
           </button>
 
           <button
             onClick={handleOpenShare}
             disabled={sharingLoading}
             className="btn btn-primary"
-            style={{ fontSize: '0.88rem', padding: '0.55rem 1.1rem' }}
+            style={{ fontSize: '0.82rem', padding: '0.45rem 0.85rem', minHeight: '40px' }}
           >
-            <Share2 size={16} />
-            <span>{sharingLoading ? 'Hazırlanıyor...' : 'Paylaş'}</span>
+            <Share2 size={15} />
+            <span>{sharingLoading ? '...' : 'Paylaş'}</span>
           </button>
         </div>
       </div>
@@ -412,12 +412,15 @@ export default function SingleListPage() {
                     </span>
 
                     <button
-                      onClick={() => handleDeleteItem(item)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem(item);
+                      }}
                       className="btn btn-ghost btn-icon"
-                      style={{ padding: '0.35rem', color: 'var(--text-muted)' }}
+                      style={{ padding: '0.4rem', minHeight: '40px', minWidth: '40px', color: 'var(--text-muted)' }}
                       title="Maddeyi Sil"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={17} />
                     </button>
                   </div>
                 ))}
@@ -446,12 +449,15 @@ export default function SingleListPage() {
               </span>
 
               <button
-                onClick={() => handleDeleteItem(item)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteItem(item);
+                }}
                 className="btn btn-ghost btn-icon"
-                style={{ padding: '0.35rem', color: 'var(--text-muted)' }}
+                style={{ padding: '0.4rem', minHeight: '40px', minWidth: '40px', color: 'var(--text-muted)' }}
                 title="Görevi Sil"
               >
-                <Trash2 size={16} />
+                <Trash2 size={17} />
               </button>
             </div>
           ))}

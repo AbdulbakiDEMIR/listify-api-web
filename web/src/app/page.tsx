@@ -104,16 +104,16 @@ export default function LandingPage() {
       </section>
 
       {/* İnteraktif Önizleme Kartı (Hero Mockup) */}
-      <section style={{ maxWidth: '780px', margin: '0 auto 5rem auto' }}>
-        <div className="glass-panel" style={{ padding: '1.5rem', border: '1px solid var(--border-glow)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ef4444' }} />
-              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#f59e0b' }} />
-              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10b981' }} />
-              <span style={{ fontSize: '0.9rem', fontWeight: 700, marginLeft: '0.5rem' }}>🛒 Hafta Sonu Pazarı & Market</span>
+      <section style={{ maxWidth: '780px', margin: '0 auto 4rem auto' }}>
+        <div className="glass-panel" style={{ padding: '1.25rem', border: '1px solid var(--border-glow)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.85rem', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#ef4444' }} />
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#f59e0b' }} />
+              <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#10b981' }} />
+              <span style={{ fontSize: '0.88rem', fontWeight: 700, marginLeft: '0.35rem' }}>🛒 Hafta Sonu Pazarı & Market</span>
             </div>
-            <span className="badge badge-indigo">Canlı Senkronize • 47s 59d kaldı</span>
+            <span className="badge badge-indigo" style={{ fontSize: '0.72rem' }}>Canlı • 47s 59d</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
@@ -216,7 +216,8 @@ export default function LandingPage() {
           <h2 style={{ fontSize: '1.85rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: '0.5rem' }}>
             Listify Web Farkı
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Geleneksel liste uygulamalarıyla karşılaştırın</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: '0.5rem' }}>Geleneksel liste uygulamalarıyla karşılaştırın</p>
+          <div style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: 600 }}>↔️ Yatay kaydırarak tüm tabloyu inceleyebilirsiniz</div>
         </div>
 
         <div className="glass-panel" style={{ overflowX: 'auto', padding: '1.5rem' }}>

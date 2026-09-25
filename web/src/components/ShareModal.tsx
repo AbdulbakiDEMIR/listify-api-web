@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Copy, Check, Users, CopyCheck, Clock, ShieldCheck } from 'lucide-react';
+import { X, Copy, Check, Users, CopyCheck, Clock, Share2, Smartphone } from 'lucide-react';
 import { ShareResponse } from '@/types';
 
 interface ShareModalProps {
@@ -19,6 +19,26 @@ export default function ShareModal({ isOpen, onClose, shareData, listTitle }: Sh
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const cloneUrl = `${origin}/l/clone/${shareData.clone_token}`;
   const syncUrl = `${origin}/l/sync/${shareData.sync_token}`;
+
+  const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
+
+  const handleNativeShare = async (url: string, titleSuffix: string) => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Listify - ${listTitle} (${titleSuffix})`,
+          text: `"${listTitle}" listemi Listify ile canlı olarak paylaşıyorum:`,
+          url: url
+        });
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          copyToClipboard(url, 'sync');
+        }
+      }
+    } else {
+      copyToClipboard(url, 'sync');
+    }
+  };
 
   const copyToClipboard = async (text: string, type: 'clone' | 'sync') => {
     try {
@@ -39,16 +59,39 @@ export default function ShareModal({ isOpen, onClose, shareData, listTitle }: Sh
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()} style={{ padding: '1.75rem' }}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        {/* Mobile Drag Handle */}
+        <div className="sheet-drag-handle" />
+
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
           <div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Listeyi Paylaş</h3>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>"{listTitle}" için paylaşım seçenekleri</p>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Listeyi Paylaş</h3>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>"{listTitle}" için paylaşım seçenekleri</p>
           </div>
           <button onClick={onClose} className="btn btn-ghost btn-icon">
             <X size={20} />
           </button>
         </div>
+
+        {/* Mobilde Tek Tıkla WhatsApp / OS Paylaşım */}
+        {hasNativeShare && (
+          <button
+            type="button"
+            onClick={() => handleNativeShare(syncUrl, 'Canlı Ortak Çalışma')}
+            className="btn btn-primary"
+            style={{
+              width: '100%',
+              marginBottom: '1.25rem',
+              padding: '0.85rem 1.25rem',
+              fontSize: '0.95rem',
+              fontWeight: 700,
+              gap: '0.65rem'
+            }}
+          >
+            <Share2 size={20} />
+            <span>Telefonda Paylaş (WhatsApp, Mesajlar...)</span>
+          </button>
+        )}
 
         {/* TTL Bilgilendirmesi */}
         <div style={{
@@ -59,29 +102,29 @@ export default function ShareModal({ isOpen, onClose, shareData, listTitle }: Sh
           borderRadius: 'var(--radius-md)',
           background: 'var(--bg-elevated)',
           border: '1px solid var(--border-subtle)',
-          marginBottom: '1.5rem',
-          fontSize: '0.85rem',
+          marginBottom: '1.25rem',
+          fontSize: '0.82rem',
           color: 'var(--text-secondary)'
         }}>
           <Clock size={18} style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
-          <span>Bu bağlantılar <strong>{expiresDate}</strong> tarihine kadar (48 saat) geçerlidir.</span>
+          <span>Bu bağlantılar <strong>{expiresDate}</strong> tarihine kadar (48 saat) aktiftir.</span>
         </div>
 
         {/* Seçenek 1: Canlı Senkronizasyon Linki */}
         <div style={{
-          padding: '1.25rem',
+          padding: '1.1rem',
           borderRadius: 'var(--radius-md)',
           border: '1px solid var(--accent-primary)',
           background: 'rgba(99, 102, 241, 0.04)',
-          marginBottom: '1.25rem'
+          marginBottom: '1rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
             <Users size={18} style={{ color: 'var(--accent-primary)' }} />
-            <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>Canlı Ortak Çalışma Linki</span>
-            <span className="badge badge-indigo" style={{ marginLeft: 'auto' }}>Eşzamanlı</span>
+            <span style={{ fontWeight: 700, fontSize: '0.92rem' }}>Canlı Ortak Çalışma Linki</span>
+            <span className="badge badge-indigo" style={{ marginLeft: 'auto', fontSize: '0.7rem' }}>Eşzamanlı</span>
           </div>
-          <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.85rem' }}>
-            Bu linki açan herkes listeyi anlık olarak birlikte düzenler ve işaretler (Market arkadaşınızla kullanım için idealdir).
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+            Bu linki açan herkes listeyi anlık olarak birlikte düzenler ve işaretler.
           </p>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <input
@@ -89,12 +132,12 @@ export default function ShareModal({ isOpen, onClose, shareData, listTitle }: Sh
               readOnly
               value={syncUrl}
               className="input"
-              style={{ fontSize: '0.82rem', background: 'var(--bg-surface)' }}
+              style={{ fontSize: '0.82rem', background: 'var(--bg-surface)', padding: '0.5rem 0.75rem', minHeight: '40px' }}
             />
             <button
               onClick={() => copyToClipboard(syncUrl, 'sync')}
               className="btn btn-primary"
-              style={{ flexShrink: 0, padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+              style={{ flexShrink: 0, padding: '0.5rem 1rem', fontSize: '0.85rem', minHeight: '40px' }}
             >
               {copiedType === 'sync' ? <Check size={16} /> : <Copy size={16} />}
               <span>{copiedType === 'sync' ? 'Kopyalandı!' : 'Kopyala'}</span>
@@ -104,19 +147,19 @@ export default function ShareModal({ isOpen, onClose, shareData, listTitle }: Sh
 
         {/* Seçenek 2: Bağımsız Kopyalama Linki */}
         <div style={{
-          padding: '1.25rem',
+          padding: '1.1rem',
           borderRadius: 'var(--radius-md)',
           border: '1px solid var(--border-strong)',
           background: 'var(--bg-elevated)',
-          marginBottom: '1.5rem'
+          marginBottom: '1.25rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
             <CopyCheck size={18} style={{ color: 'var(--text-primary)' }} />
-            <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>Kopyalama Linki</span>
-            <span className="badge" style={{ marginLeft: 'auto', background: 'var(--bg-surface)', color: 'var(--text-muted)' }}>Sıfırlanmış</span>
+            <span style={{ fontWeight: 700, fontSize: '0.92rem' }}>Kopyalama Linki</span>
+            <span className="badge" style={{ marginLeft: 'auto', background: 'var(--bg-surface)', color: 'var(--text-muted)', fontSize: '0.7rem' }}>Sıfırlanmış</span>
           </div>
-          <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.85rem' }}>
-            Linki açan kişi listenin bağımsız bir kopyasını indirir. Tüm onay kutuları temizlenir ve orijinal listeniz etkilenmez.
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+            Açan kişi bağımsız bir kopya indirir. Onay kutuları temizlenir, listeniz etkilenmez.
           </p>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <input
@@ -124,12 +167,12 @@ export default function ShareModal({ isOpen, onClose, shareData, listTitle }: Sh
               readOnly
               value={cloneUrl}
               className="input"
-              style={{ fontSize: '0.82rem', background: 'var(--bg-surface)' }}
+              style={{ fontSize: '0.82rem', background: 'var(--bg-surface)', padding: '0.5rem 0.75rem', minHeight: '40px' }}
             />
             <button
               onClick={() => copyToClipboard(cloneUrl, 'clone')}
               className="btn btn-secondary"
-              style={{ flexShrink: 0, padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+              style={{ flexShrink: 0, padding: '0.5rem 1rem', fontSize: '0.85rem', minHeight: '40px' }}
             >
               {copiedType === 'clone' ? <Check size={16} /> : <Copy size={16} />}
               <span>{copiedType === 'clone' ? 'Kopyalandı!' : 'Kopyala'}</span>
@@ -138,7 +181,7 @@ export default function ShareModal({ isOpen, onClose, shareData, listTitle }: Sh
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button onClick={onClose} className="btn btn-secondary">
+          <button onClick={onClose} className="btn btn-secondary" style={{ width: '100%', minHeight: '44px' }}>
             Kapat
           </button>
         </div>

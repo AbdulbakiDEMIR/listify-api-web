@@ -2,48 +2,38 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import ThemeToggle from './ThemeToggle';
-import { ListPlus, Sparkles } from 'lucide-react';
+import { ListPlus, Sparkles, Plus } from 'lucide-react';
 
 export default function Header() {
   return (
-    <header className="glass-panel" style={{ position: 'sticky', top: '1rem', margin: '1rem auto', zIndex: 40, width: 'calc(100% - 2rem)', maxWidth: '1100px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1.5rem' }}>
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', color: 'inherit' }}>
-          <div style={{
-            width: '42px',
-            height: '42px',
-            borderRadius: '12px',
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-glow)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '3px',
-            boxShadow: 'var(--accent-glow)'
-          }}>
+    <header className="site-header glass-panel">
+      <div className="header-container">
+        {/* Sol Logo ve Başlık */}
+        <Link href="/" className="header-logo-link">
+          <div className="header-logo-badge">
             <img
               src="/logo.png"
               alt="Listify Logo"
-              width={34}
-              height={34}
+              width={32}
+              height={32}
               style={{ objectFit: 'contain' }}
             />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.02em', background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span className="header-brand-title">
                 Listify
               </span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '2px 6px', borderRadius: '6px', background: 'var(--bg-elevated)', color: 'var(--accent-primary)', border: '1px solid var(--border-subtle)' }}>
+              <span className="header-brand-tag">
                 WEB
               </span>
             </div>
           </div>
         </Link>
 
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        {/* Masaüstü Navigasyon (Mobilde Gizlenir, BottomNav devralır) */}
+        <nav className="desktop-nav">
           <Link href="/lists" className="btn btn-secondary" style={{ padding: '0.5rem 0.9rem', fontSize: '0.88rem' }}>
             <ListPlus size={17} style={{ color: 'var(--accent-primary)' }} />
             <span>Listelerim</span>
@@ -54,7 +44,113 @@ export default function Header() {
           </Link>
           <ThemeToggle />
         </nav>
+
+        {/* Mobil Sağ Aksiyon (Sadece ThemeToggle) */}
+        <div className="mobile-header-actions">
+          <ThemeToggle />
+        </div>
       </div>
+
+      <style jsx>{`
+        .site-header {
+          position: sticky;
+          top: 0;
+          z-index: 40;
+          width: 100%;
+          margin: 0;
+          border-radius: 0;
+          border-top: none;
+          border-left: none;
+          border-right: none;
+          padding-top: max(0.4rem, var(--safe-top));
+          padding-bottom: 0.4rem;
+        }
+
+        .header-container {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.35rem 1rem;
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+
+        .header-logo-link {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          text-decoration: none;
+          color: inherit;
+        }
+
+        .header-logo-badge {
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          background: var(--bg-elevated);
+          border: 1px solid var(--border-glow);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 3px;
+          box-shadow: var(--accent-glow);
+        }
+
+        .header-brand-title {
+          font-size: 1.25rem;
+          font-weight: 800;
+          letter-spacing: -0.02em;
+          background: var(--accent-gradient);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .header-brand-tag {
+          font-size: 0.68rem;
+          font-weight: 700;
+          padding: 2px 5px;
+          border-radius: 5px;
+          background: var(--bg-elevated);
+          color: var(--accent-primary);
+          border: 1px solid var(--border-subtle);
+        }
+
+        .desktop-nav {
+          display: none;
+          align-items: center;
+          gap: 0.65rem;
+        }
+
+        .mobile-header-actions {
+          display: flex;
+          align-items: center;
+        }
+
+        @media (min-width: 768px) {
+          .site-header {
+            top: 1rem;
+            margin: 1rem auto;
+            width: calc(100% - 2rem);
+            max-width: 1100px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            padding-top: 0;
+            padding-bottom: 0;
+          }
+
+          .header-container {
+            padding: 0.75rem 1.5rem;
+          }
+
+          .desktop-nav {
+            display: flex;
+          }
+
+          .mobile-header-actions {
+            display: none;
+          }
+        }
+      `}</style>
     </header>
   );
 }

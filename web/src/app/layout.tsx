@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
+import BottomNav from '@/components/BottomNav';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://listify.web'),
@@ -11,6 +12,11 @@ export const metadata: Metadata = {
   description: 'Üyeliksiz, local-first çalışan, 48 saatlik canlı eşitleme ve akıllı kategorizasyon sunan modern alışveriş ve yapılacaklar listesi uygulaması.',
   keywords: ['alışveriş listesi', 'yapılacaklar listesi', 'to-do list', 'local-first', 'no-auth', 'pwa', 'akıllı market listesi', 'canlı senkronizasyon'],
   authors: [{ name: 'Listify Web' }],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Listify'
+  },
   openGraph: {
     title: 'Listify Web - Kayıt Olmadan, Anında Liste Oluştur ve Paylaş',
     description: 'Üyeliksiz, local-first çalışan, 48 saatlik canlı eşitleme ve akıllı kategorizasyon sunan modern alışveriş ve yapılacaklar listesi.',
@@ -48,9 +54,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0d9488',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#071018' },
+    { media: '(prefers-color-scheme: light)', color: '#f6faf9' }
+  ],
   width: 'device-width',
-  initialScale: 1
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover'
 };
 
 export default function RootLayout({
@@ -62,9 +74,10 @@ export default function RootLayout({
     <html lang="tr" data-theme="dark">
       <body>
         <Header />
-        <main className="container" style={{ paddingBottom: '4rem' }}>
+        <main className="container">
           {children}
         </main>
+        <BottomNav />
       </body>
     </html>
   );
