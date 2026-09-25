@@ -481,3 +481,111 @@ body {
     display: none;
   }
 }
+
+/* Site Header - Responsive & Mobile-First */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  margin: 0;
+  border-radius: 0;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  padding-top: max(0.4rem, var(--safe-top));
+  padding-bottom: 0.4rem;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.35rem 1rem;
+}
+
+.header-logo-link {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  text-decoration: none !important;
+  color: inherit !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.header-logo-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;
+  box-shadow: var(--accent-glow);
+  flex-shrink: 0;
+}
+
+.header-brand-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+}
+
+.header-brand-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  color: var(--accent-primary);
+  border: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+
+.desktop-nav {
+  display: none;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.mobile-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .site-header {
+    top: 1rem;
+    margin: 1rem auto;
+    width: calc(100% - 2rem);
+    max-width: 1100px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .header-container {
+    padding: 0.75rem 1.5rem;
+  }
+
+  .desktop-nav {
+    display: flex;
+  }
+
+  .mobile-header-actions {
+    display: none;
+  }
+}
+
