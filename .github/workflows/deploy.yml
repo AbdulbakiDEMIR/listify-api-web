@@ -52,7 +52,8 @@ jobs:
           script_stop: true
           script: |
             cd /opt/apps/listify
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             docker compose pull web api
             docker compose up -d --remove-orphans
             docker image prune -f
