@@ -312,6 +312,29 @@ export default function LandingPage() {
           <ArrowRight size={18} />
         </Link>
       </section>
+
+      {/* Sayfa Alt Bilgisi (Footer) */}
+      <footer style={{
+        textAlign: 'center',
+        padding: '3rem 1rem 5.5rem 1rem',
+        color: 'var(--text-muted)',
+        fontSize: '0.875rem',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '0.4rem',
+        borderTop: '1px solid var(--border-subtle)',
+        marginTop: '3.5rem'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 500 }}>
+          <Sparkles size={15} style={{ color: 'var(--accent-primary)' }} />
+          <span>Listify Web — Local-First & Açık Kaynak Deneyimi</span>
+        </div>
+        <p style={{ margin: 0, opacity: 0.75, fontSize: '0.8rem' }}>
+          © {new Date().getFullYear()} Tüm hakları saklıdır.
+        </p>
+      </footer>
     </>
   );
 }
+
