@@ -1,43 +1,46 @@
 services:
-  # 1. MySQL Veritabanı
+  # 1. MySQL Veritabanı (Düşük RAM ve Sağlık Kontrolü Optimize Edildi)
   db:
     image: mysql:8.0
     container_name: listify_db
     restart: unless-stopped
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --innodb-buffer-pool-size=64M
+      --innodb-log-buffer-size=8M
+      --max-connections=50
+      --performance-schema=OFF
+    deploy:
+      resources:
+        limits:
+          memory: 350M
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-listify_root_secret_pass}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-listify}
+      MYSQL_USER: ${MYSQL_USER:-listify_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-listify_user_secure_pass}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 30s
     networks:
       - listify_net
 
-  # 2. REST API Servisi (shares-api)
+  # 2. REST API Servisi
   api:
     image: ghcr.io/abdulbakidemir/listify-api:latest
     container_name: listify_api
     restart: unless-stopped
     environment:
       PORT: 8080
-      NODE_ENV: ${NODE_ENV:-production}
+      NODE_ENV: production
       MYSQL_HOST: db
       MYSQL_PORT: 3306
       MYSQL_USER: ${MYSQL_USER:-listify_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-listify_user_secure_pass}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-listify}
-      TTL_HOURS: ${TTL_HOURS:-48}
-      CLEANUP_CRON_SCHEDULE: ${CLEANUP_CRON_SCHEDULE:-"0 * * * *"}
+      TTL_HOURS: 48
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     networks:
       - listify_net
       - proxy-net
@@ -49,7 +52,6 @@ services:
       - "traefik.http.routers.listify-api.tls.certresolver=myresolver"
       - "traefik.http.services.listify-api.loadbalancer.server.port=8080"
 
-  # 3. Next.js Web Uygulaması
   web:
     image: ghcr.io/abdulbakidemir/listify-web:latest
     container_name: listify_web
@@ -57,7 +59,6 @@ services:
     environment:
       PORT: 3000
       NODE_ENV: production
-      NEXT_PUBLIC_API_URL: https://api.abdulbakidemir.com.tr/api/v1
     depends_on:
       - api
     networks:
